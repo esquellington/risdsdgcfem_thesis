@@ -1,6 +1,6 @@
 # risdsdgcfem_thesis
 
-This repository contains most of code the developed during my PhD thesis
+This repository contains most of the code developed during my PhD thesis
 "Robust Interactive Simulation of Deformable Solids with Detailed
 Geometry using Corotational FEM".
 
