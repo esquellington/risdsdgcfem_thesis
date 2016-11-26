@@ -1,0 +1,128 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Sat Feb 21 21:34:25 2015
+;; Desktop file format version 206
+;; Emacs version 24.3.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("fixno" "split_f" "fixnon" "nmf" "face_id" "tetsolid3_" "vec_" "rebuildtop" "layer" "single" "cdt_per" "m_SIM" "Fit_" "fit_" "fixnon" "naturals"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/bzr/dev/pLa/bin/posix/c++11-release/output.txt" "~/bzr/dev/pLa/src/Geo/util/Viz.cpp" "~/bzr/dev/pLa/src/Geo/shape/TetSolidShape3.cpp" "~/bzr/dev/pLa/src/Geo/shape/TriSurfaceShape3.h" "~/bzr/dev/pLa/src/Geo/np/RayCast.h" "~/bzr/dev/pLa/src/Geo/np/Clip.cpp" "~/bzr/dev/pLa/examples/testSaphyre/s2s/off/build.sh" "~/Escriptori/volutil/matrix.hpp" "~/bzr/dev/pLa/src/Geo/bv/GBoundingVolumeHierarchy.h" "~/bzr/dev/pLa/examples/escalunya/TET_utils.h" "~/bzr/dev/pLa/examples/tetgen2geo/main.cpp" "~/bzr/dev/pLa/examples/escalunya/OFF_utils.h" "~/bzr/dev/pLa/examples/escalunya/AppTask.h" "~/bzr/dev/pLa/examples/cibulet/Params.h" "~/bzr/dev/pLa/examples/escalunya/Params.h" "~/bzr/dev/pLa/examples/cibulet/CGAL_utils.h" "~/bzr/dev/pLa/build/scons/SConstruct" "~/bzr/dev/pLa/examples/escalunya/CGAL_utils.h"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/oscar/bzr/dev/pLa/src/Geo/shape/TetSolidShape3.cpp"
+  "TetSolidShape3.cpp"
+  'c++-mode
+  '(abbrev-mode flycheck-mode global-auto-revert-mode diff-hl-mode)
+  17662
+  '(17664 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/oscar/bzr/dev/pLa/src/Geo/shape/TetSolidShape3.h"
+  "TetSolidShape3.h"
+  'c++-mode
+  '(abbrev-mode flycheck-mode global-auto-revert-mode diff-hl-mode)
+  6492
+  '(6516 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/oscar/bzr/dev/pLa/examples/escalunya/TET_utils.cpp"
+  "TET_utils.cpp"
+  'c++-mode
+  '(abbrev-mode flycheck-mode global-auto-revert-mode diff-hl-mode)
+  21723
+  '(21587 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/home/oscar/bzr/dev/pLa/examples/escalunya/main.cpp"
+  "main.cpp"
+  'c++-mode
+  '(abbrev-mode flycheck-mode global-auto-revert-mode diff-hl-mode)
+  21
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/oscar/bzr/dev/pLa/examples/escalunya/Params.h"
+  "Params.h"
+  'c++-mode
+  '(abbrev-mode flycheck-mode global-auto-revert-mode diff-hl-mode)
+  2162
+  '(1 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/oscar/bzr/dev/pLa/src/Geo/util/Viz.cpp"
+  "Viz.cpp"
+  'c++-mode
+  '(abbrev-mode flycheck-mode global-auto-revert-mode diff-hl-mode)
+  64982
+  '(29871 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/oscar/bzr/dev/pLa/examples/escalunya/AppTask.h"
+  "AppTask.h"
+  'c++-mode
+  '(abbrev-mode flycheck-mode global-auto-revert-mode diff-hl-mode)
+  12483
+  '(30874 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/oscar/bzr/dev/pLa/build/scons/SConstruct"
+  "SConstruct"
+  'fundamental-mode
+  '(flycheck-mode global-auto-revert-mode)
+  1193
+  '(1193 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/oscar/bzr/dev/pLa/src/Geo/shape/TriSurfaceShape3.h"
+  "TriSurfaceShape3.h"
+  'c++-mode
+  '(abbrev-mode flycheck-mode global-auto-revert-mode diff-hl-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/oscar/bzr/dev/pLa/src/Geo/np/Clip.cpp"
+  "Clip.cpp"
+  'c++-mode
+  '(abbrev-mode flycheck-mode global-auto-revert-mode diff-hl-mode)
+  18989
+  '(19581 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+

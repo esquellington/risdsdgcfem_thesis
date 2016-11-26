@@ -1,0 +1,294 @@
+#-----------------#
+# Main SConscript #
+#-----------------#
+
+#Architecture:
+# SCons sets global environment:
+# - Global dirs: (exported)
+#   - Base source dir: global_src_dir
+#   - Include dirs: CPPPATH (global_inc_dir_list)
+#   - Library dirs: LIBPATH (global_lib_dir_list)
+#   - Build root dir: build_dir
+#   - Base library output dir: global_output_lib_dir
+#   - Base executable output dir: global_output_exe_dir
+# - Common compiler flags: CCFLAGS
+#   - Platform
+#   - Profile
+#   - Defines
+# - Common linked libraries: LIBS (for programs)
+#
+# Each libXXX.scons inherits env and builds a library:
+# - Import *
+# - Local source dir: global_src_dir + local_src_dir
+# - Local compiler flags: local_CCFLAGS = CCFLAGS (+ locals)
+# - Installs into global_output_lib_dir
+# - Generates a libXXX target alias
+#
+# Each testXXX.scons inherits env and builds an executable:
+# - Import *
+# - Local source dir: global_src_dir + local_src_dir
+# - Local compiler flags: local_CCFLAGS = CCFLAGS (+ locals)
+
+# - Local library dirs: local_LIBPATH = LIBPATH (+ locals)
+# - Local linked libraries: local_LIBS = LIBS (+ locals)
+# - Installs into global_output_exe_dir
+# - Generates a testXXX target alias
+
+#TODO
+#- EXCLUDING directories and file patterns.
+#- Aclarir pq NO s'afegeixen els Install com a Default
+
+# Options
+opts = Variables() #Alternative: Options('options_file.py')
+opts.AddVariables( EnumVariable( 'Profile', 'Set build profile', 'release',
+                                 allowed_values=('debug', 'release', 'final', 'ultimate', 'openmp', 'sanitize', 'gprof',
+                                                 'c++11-debug', 'c++11-release', 'c++11-ultimate', 'c++11-openmp', 'c++11-sanitize'),
+                                 ignorecase=1 )
+                   #\note Could add other variables here...
+                   )
+
+# Environment (Exported)
+env = Environment( options = opts )
+
+# Prints options Help with "scons -h"
+Help( opts.GenerateHelpText(env) )
+
+# Get absolute PWD to build using absolute paths derived from relative ones
+import os
+working_directory = os.getcwd()
+# print "WD = ", working_directory
+
+# Global settings
+env['CPPPATH'] = [ working_directory + '/../../src' ]
+env['LIBS'] = ['Mal','Util'] #libs required by all other libs/apps
+common_ccflags = [ '-Wall', '-Werror', '-Wno-unused', '-Wno-unused-result', '-Wno-unknown-pragmas' ]
+
+# Platform-dependent settings
+if env['PLATFORM'] == 'posix':
+        env['LIBPATH'] = ['/usr/lib','/usr/local/lib']
+        # Profile-dependent settings
+        env['LIBPATH'].append( working_directory + '/../../lib/$PLATFORM/$Profile' )
+        if env['Profile'] == 'final':
+                env['CCFLAGS'] = ['-O2',
+                                  '-DUSE_BOOST',
+                                  '-DPROFILE_FINAL'] + common_ccflags
+        elif env['Profile'] == 'ultimate':
+                env['CCFLAGS'] = ['-O3',
+                                  '-DUSE_BOOST',
+                                  '-DPROFILE_FINAL' ] + common_ccflags
+        elif env['Profile'] == 'c++11-ultimate':
+                env['CCFLAGS'] = ['-O3',
+                                  '-msse4',
+                                  #'-g', #\todo REQUIRED to show c++ code in disassembly/annotate in valgrind/perf
+                                  #'-fno-omit-frame-pointer',
+                                  '-fno-exceptions',
+                                  #'-fno-rtti', #\todo CANNOT disable RTTI globally due to boost::any in program_options
+                                  '-DUSE_BOOST', '-DBOOST_NO_EXCEPTIONS','-DBOOST_EXCEPTION_DISABLE', #'-DBOOST_NO_RTTI', '-DBOOST_NO_TYPEID',
+                                  '-DPROFILE_FINAL',
+                                  '-std=c++11' ] + common_ccflags
+                #TODO: OPTIMIZE with -fno-rtti but boost::any fails
+        elif env['Profile'] == 'openmp':
+                env['CCFLAGS'] = ['-O3',
+                                  '-DUSE_BOOST',
+                                  '-DPROFILE_FINAL',
+                                  '-fopenmp'] + common_ccflags
+                env['LINKFLAGS'] = ['-O3','-fopenmp'] #required to link with libgomp automatically
+        elif env['Profile'] == 'c++11-openmp':
+                env['CCFLAGS'] = ['-O3',
+                                  '-msse4',
+                                  '-g', #\todo REQUIRED to show c++ code in disassembly/annotate in valgrind/perf
+                                  '-fno-omit-frame-pointer',
+                                  '-fno-exceptions',
+                                  #'-fno-rtti', #\todo CANNOT disable RTTI globally due to boost::any in program_options
+                                  '-DUSE_BOOST', '-DBOOST_NO_EXCEPTIONS','-DBOOST_EXCEPTION_DISABLE', #'-DBOOST_NO_RTTI', '-DBOOST_NO_TYPEID',
+                                  '-DPROFILE_FINAL',
+                                  '-std=c++11',
+                                  '-fopenmp' ] + common_ccflags
+                env['LINKFLAGS'] = ['-O3','-fopenmp'] #required to link with libgomp automatically
+        elif env['Profile'] == 'release':
+                env['CCFLAGS'] = ['-O2',
+                                  '-DUSE_BOOST',
+                                  '-DPROFILE_RELEASE'] + common_ccflags
+        elif env['Profile'] == 'c++11-release':
+                env['CCFLAGS'] = ['-O2',
+                                  '-msse4',
+                                  '-DUSE_BOOST',
+                                  '-DPROFILE_RELEASE',
+                                  '-std=c++11'] + common_ccflags
+        elif env['Profile'] == 'debug':
+                env['CCFLAGS'] = ['-g',
+                                  '-DUSE_BOOST',
+                                  '-DPROFILE_DEBUG'] + common_ccflags
+        elif env['Profile'] == 'c++11-debug':
+                env['CCFLAGS'] = ['-g',
+                                  '-msse4',
+                                  '-DUSE_BOOST',
+                                  '-DPROFILE_DEBUG',
+                                  '-std=c++11' ] + common_ccflags
+        elif env['Profile'] == 'sanitize': #debug + sanitize
+                env['CCFLAGS'] = ['-g3','-DUSE_BOOST','-DPROFILE_DEBUG', '-fno-omit-frame-pointer', '-fsanitize=address' ] + common_ccflags
+                env['LINKFLAGS'] = ['-fno-omit-frame-pointer', '-fsanitize=address'] #required by fsanitize, otherwise link fails!
+        elif env['Profile'] == 'c++11-sanitize': #debug + sanitize
+                env['CCFLAGS'] = ['-g3','-DUSE_BOOST','-DPROFILE_DEBUG', '-fno-omit-frame-pointer', '-fsanitize=address', '-std=c++11' ] + common_ccflags
+                env['LINKFLAGS'] = ['-fno-omit-frame-pointer', '-fsanitize=address'] #required by fsanitize, otherwise link fails!
+        else: #gprof
+                env['CCFLAGS'] = ['-O2','-g','-pg','-fno-omit-frame-pointer','-DUSE_BOOST','-DPROFILE_GPROF'] + common_ccflags
+                env['LINKFLAGS'] = ['-O2','-g','-pg'] #required to link with gprof automatically
+else:
+        build_dir_prefix = 'MERDA/'
+# TEMPORAL: Force 64b
+#env['CCFLAGS'] = env['CCFLAGS'] + ['-D__PLA_64']
+
+# TEMPORAL: Debug paths
+# print "CPPPATH = ", env['CPPPATH']
+# print "LIBPATH = ", env['LIBPATH']
+
+# Profile-dependent settings (incremental)
+# global_exe_suffix = ''
+# if env['Profile'] == 'final':
+#         global_exe_suffix = '_f'
+# elif env['Profile'] == 'release':
+#         global_exe_suffix = '_r'
+# elif env['Profile'] == 'debug':
+#         global_exe_suffix = '_d'
+# else: #gprof
+#         global_exe_suffix = '_g'
+
+# Global dirs
+build_dir_prefix = '$PLATFORM/$Profile'
+global_src_dir = working_directory + '/../../src'
+global_inc_dir_list = env['CPPPATH']
+global_lib_dir_list = env['LIBPATH']
+global_examples_dir = working_directory + '/../../examples'
+global_output_lib_dir = [ working_directory + '/../../lib/$PLATFORM/$Profile' ]
+global_output_exe_dir = [ working_directory + '/../../bin/$PLATFORM/$Profile' ]
+
+# Exports
+exports_list = ['env',
+                'global_src_dir',
+                'global_inc_dir_list',
+                'global_lib_dir_list',
+                'global_examples_dir',
+                'global_output_lib_dir',
+                'global_output_exe_dir']
+
+#---- Targets
+# Libs
+env.SConscript( 'libMal.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/libMal',
+                src_dir = global_src_dir,
+                duplicate=0 )
+
+env.SConscript( 'libUtil.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/libUtil',
+                src_dir = global_src_dir,
+                duplicate=0 )
+
+env.SConscript( 'libGeo.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/libGeo',
+                src_dir = global_src_dir,
+                duplicate=0 )
+
+env.SConscript( 'libSafra.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/libSafra',
+                src_dir = global_src_dir,
+                duplicate=0 )
+
+env.SConscript( 'libSaphyre2.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/libSaphyre2',
+                src_dir = global_src_dir,
+                duplicate=0 )
+
+# Tests
+env.SConscript( 'testMal.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/testMal',
+                src_dir = global_src_dir,
+                duplicate=0 )
+
+env.SConscript( 'testUtil.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/testUtil',
+                src_dir = global_src_dir,
+                duplicate=0 )
+
+env.SConscript( 'testSaphyre.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/testSaphyre',
+                src_dir = global_examples_dir,
+                duplicate=0 )
+
+# Misc
+env.SConscript( 'testFE.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/testFE',
+                src_dir = global_examples_dir,
+                duplicate=0 )
+
+# Apps
+env.SConscript( 'cibulet.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/cibulet',
+                src_dir = global_examples_dir,
+                duplicate=0 )
+
+env.SConscript( 'escalunya.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/escalunya',
+                src_dir = global_examples_dir,
+                duplicate=0 )
+
+env.SConscript( 'tetgen2geo.scons',
+                exports = exports_list,
+                variant_dir = build_dir_prefix + '/tetgen2geo',
+                src_dir = global_examples_dir,
+                duplicate=0 )
+
+# Target group aliases: (tests, libs,  ...)
+env.Alias('libs', ['libMal','libUtil','libGeo','libSaphyre2','libSafra'] )
+env.Alias('tests', ['testMal','testUtil','testSaphyre'] )
+env.Alias('all', ['libs','tests'] )
+
+#---- Command builders
+# See http://www.scons.org/doc/HTML/scons-user/c3762.html
+# \todo We have to specify a TARGET and SOURCE even though they're
+# constant... is there any better way to run this constant
+# post-build step??
+
+# ebrowse:
+# Hackish command to generate BROWSE file for emacs/ebrowse
+# See http://www.gnu.org/software/emacs/manual/html_mono/ebrowse.html from manual/keybindings
+env.Command( 'BROWSE',                                              #target
+             'ebrowse.files',                                       #source (unnecesary, but required by Command()
+             ["cd ../../doc ; \
+              find ../ -name '*.h' -o -name '*.cpp' > $SOURCE ; \
+              ebrowse -f $SOURCE -o $TARGET"])
+
+# OLD version that ran each command separatedly in current dir, thus
+#  producing relative file paths in ebrowse.file that did NOT work when
+#  BROWSE was moved to ../../doc
+#env.Command( 'BROWSE',                                              #target
+#             'ebrowse.files',                                       #source (unnecesary, but required by Command()
+#             ["find ../../ -name '*.h' -o -name '*.cpp' > $SOURCE", #gen inpute file list (recursively from pLa/)
+#              "ebrowse -f $SOURCE -o $TARGET",                      #gen BROWSE file
+#              "mv $TARGET ../../doc/"])                             #move result to /doc directory
+
+
+# TAGS:
+# Hackish command to generate TAGS file for emacs
+env.Command( 'TAGS',                                                #target
+             'tags.files',                                          #source (unnecesary, but required by Command()
+             ["cd ../../doc ; \
+              find ../../ -name '*.h' -o -name '*.cpp' > $SOURCE ; \
+              etags -L $SOURCE -o $TARGET"])
+
+# Default target
+Default(None)
+
+#DEBUG:
+#print env.Dump()

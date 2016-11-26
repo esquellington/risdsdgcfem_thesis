@@ -1,0 +1,38 @@
+#---------------#
+# tetgen2geo App #
+#---------------#
+
+# Import stuff
+Import('*')
+
+from scons_utils import *
+
+# Sources (relative to global_examples_dir)
+local_src_dir = global_examples_dir + '/tetgen2geo'
+src_list = FilterStringList( RecursiveFileList(local_src_dir,False), "\.cpp$" )
+src_list = PrependStringList('tetgen2geo/',src_list)
+
+# Flags
+local_CCFLAGS = env['CCFLAGS'] #+ locals
+
+# Includes
+local_CPPPATH = env['CPPPATH'] #+ locals
+
+# Library paths
+local_LIBPATH = env['LIBPATH'] #+ locals
+
+# Libraries (should depend on options, env['PROFILE'] == debug?)
+local_LIBS = ['Safra','Saphyre2','Geo','GLEW','GL','GLU','glut'] + env['LIBS'] #for some reason, if LIBS is not at the end, fails due to libUtil...why!??!?!
+
+# Build app
+tetgen2geo_build = env.Program( target = 'tetgen_to_geo',
+                               source = src_list,
+                               CCFLAGS = local_CCFLAGS,
+                               CPPPATH = local_CPPPATH,
+                               LIBS = local_LIBS,
+                               LIBPATH = local_LIBPATH )
+# Install app
+tetgen2geo_install = env.Install( global_output_exe_dir, tetgen2geo_build )
+
+# Standard module target alias
+env.Alias( 'tetgen2geo', [ tetgen2geo_build, tetgen2geo_install ] )

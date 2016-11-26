@@ -1,0 +1,43 @@
+#-----------------#
+# testSaphyre App #
+#-----------------#
+
+# Import stuff
+Import('*')
+
+from scons_utils import *
+
+# Sources (relative to global_examples_dir)
+local_src_dir = global_examples_dir + '/testSaphyre'
+src_list = FilterStringList( RecursiveFileList(local_src_dir,False), "\.cpp$" )
+src_list = PrependStringList('testSaphyre/',src_list)
+
+# Flags
+local_CCFLAGS = env['CCFLAGS'] #+ locals
+
+# Includes
+local_CPPPATH = env['CPPPATH'] #+ locals
+
+# Library paths
+local_LIBPATH = env['LIBPATH'] #+ locals
+
+# Libraries (should depend on options, env['PROFILE'] == debug?)
+# \note gsl, gslcblas and m required for __USE_GSL_SVD
+# \note pthred required to work-around ld bug, see https://bugs.launchpad.net/ubuntu/+source/nvidia-graphics-drivers-319/+bug/1248642
+local_LIBS = ['Safra','Saphyre2','Geo','GLEW','GL','GLU','glut'] + env['LIBS'] \
+             + ['gsl', 'gslcblas', 'm'] \
+             + ['pthread'] \
+             + ['boost_program_options']
+
+# Build app
+testSaphyre_build = env.Program( target = 'test_Saphyre',
+                                 source = src_list,
+                                 CCFLAGS = local_CCFLAGS,
+                                 CPPPATH = local_CPPPATH,
+                                 LIBS = local_LIBS,
+                                 LIBPATH = local_LIBPATH )
+# Install app
+testSaphyre_install = env.Install( global_output_exe_dir, testSaphyre_build )
+
+# Standard module target alias
+env.Alias( 'testSaphyre', [ testSaphyre_build, testSaphyre_install ] )

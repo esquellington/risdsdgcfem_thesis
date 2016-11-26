@@ -1,0 +1,31 @@
+#---------------#
+# Safra Library #
+#---------------#
+
+# Import stuff
+Import('*')
+
+from scons_utils import *
+
+# Sources (relative to global_src_dir)
+local_src_dir = global_src_dir + '/Safra'
+src_list = FilterStringList( RecursiveFileList(local_src_dir,False), "\.cpp$" )
+src_list = PrependStringList('Safra/',src_list)
+
+# Flags
+local_CCFLAGS = env['CCFLAGS'] #+ locals
+
+# Includes
+local_CPPPATH = env['CPPPATH'] #+ locals
+
+# Build static lib
+libSafra_build = env.StaticLibrary( target = 'Safra',
+                                    source = src_list,
+                                    CCFLAGS = local_CCFLAGS,
+                                    CPPPATH = local_CPPPATH )
+
+# Install static lib
+libSafra_install = env.Install( global_output_lib_dir, libSafra_build )
+
+# Standard module target alias
+env.Alias('libSafra', [libSafra_build, libSafra_install] )

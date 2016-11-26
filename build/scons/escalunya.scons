@@ -1,0 +1,49 @@
+#---------------#
+# escalunya App   #
+#---------------#
+
+# Import stuff
+Import('*')
+
+from scons_utils import *
+
+# Sources (relative to global_examples_dir)
+local_src_dir = global_examples_dir + '/escalunya'
+src_list = FilterStringList( RecursiveFileList(local_src_dir,False), "\.cpp$" )
+src_list = PrependStringList('escalunya/',src_list)
+
+# Flags
+local_CCFLAGS = env['CCFLAGS'] #+ locals
+# CGAL flags
+local_CCFLAGS = local_CCFLAGS + [ '-fstack-protector',
+                                  '--param=ssp-buffer-size=4',
+                                  '-Wformat',
+                                  '-Wformat-security',
+                                  '-frounding-math',
+                                  '-Wl,-Bsymbolic-functions',
+                                  '-Wl,-z,relro',
+                                  '-rdynamic' ]
+
+# Includes
+local_CPPPATH = env['CPPPATH'] #+ locals
+
+# Library paths
+local_LIBPATH = env['LIBPATH'] #+ locals
+
+# Libraries (should depend on options, env['PROFILE'] == debug?)
+local_LIBS = ['Safra','Geo','GLEW','GL','GLU','glut'] + env['LIBS'] #for some reason, if LIBS is not at the end, fails due to libUtil...why!??!?!
+# CGAL dependencies
+local_LIBS = local_LIBS + ['CGAL_Core','CGAL','gmpxx','mpfr','gmp','boost_thread','boost_program_options','boost_system']
+
+# Build app
+escalunya_build = env.Program( target = 'escalunya_app',
+                             source = src_list,
+                             CCFLAGS = local_CCFLAGS,
+                             CPPPATH = local_CPPPATH,
+                             LIBS = local_LIBS,
+                             LIBPATH = local_LIBPATH )
+# Install app
+escalunya_install = env.Install( global_output_exe_dir, escalunya_build )
+
+# Standard module target alias
+env.Alias( 'escalunya', [ escalunya_build, escalunya_install ] )

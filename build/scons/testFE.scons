@@ -1,0 +1,40 @@
+#-----------------#
+# testFE App #
+#-----------------#
+
+# Import stuff
+Import('*')
+
+from scons_utils import *
+
+# Sources (relative to global_examples_dir)
+local_src_dir = global_examples_dir + '/testFE'
+src_list = FilterStringList( RecursiveFileList(local_src_dir,False), "\.cpp$" )
+src_list = PrependStringList('testFE/',src_list)
+
+# Flags
+local_CCFLAGS = env['CCFLAGS'] #+ locals
+
+# Includes
+local_CPPPATH = env['CPPPATH'] + ['/usr/include/eigen3'] #+ locals
+
+# Library paths
+local_LIBPATH = env['LIBPATH'] #+ locals
+
+# Libraries (should depend on options, env['PROFILE'] == debug?)
+local_LIBS = ['Safra','GLEW','GL','GLU','glut'] + env['LIBS'] \
+             + ['gsl', 'gslcblas', 'm'] \
+             + ['pthread']
+
+# Build app
+testFE_build = env.Program( target = 'test_FE',
+                            source = src_list,
+                            CCFLAGS = local_CCFLAGS,
+                            CPPPATH = local_CPPPATH,
+                            LIBS = local_LIBS,
+                            LIBPATH = local_LIBPATH )
+# Install app
+testFE_install = env.Install( global_output_exe_dir, testFE_build )
+
+# Standard module target alias
+env.Alias( 'testFE', [ testFE_build, testFE_install ] )

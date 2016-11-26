@@ -1,0 +1,34 @@
+#---------------#
+# test_Util App #
+#---------------#
+
+# Import stuff
+Import('*')
+
+# Source (relative to src_dir)
+src_list = ['util/tests/test_Util.cpp']
+
+# Flags
+local_CCFLAGS = env['CCFLAGS'] #+ locals
+
+# Includes
+local_CPPPATH = env['CPPPATH'] #+ locals
+
+# Library paths
+local_LIBPATH = env['LIBPATH'] #+ locals
+
+# Libraries (should depend on options, env['PROFILE'] == debug?)
+local_LIBS = env['LIBS'] #+ ['m', 'stdc++'] (std libs NOT NECESSARY!?)
+
+# Build app
+testUtil_build = env.Program( target = 'test_Util',
+                             source = src_list,
+                             CCFLAGS = local_CCFLAGS,
+                             CPPPATH = local_CPPPATH,
+                             #LIBS = local_LIBS,
+                             LIBPATH = local_LIBPATH )
+# Install app
+testUtil_install = env.Install( global_output_exe_dir, testUtil_build )
+
+# Standard module target alias
+env.Alias( 'testUtil', [ testUtil_build, testUtil_install ] )
