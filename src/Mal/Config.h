@@ -1,12 +1,8 @@
 #ifndef MAL_CONFIG_H
 #define MAL_CONFIG_H
 
-#if defined(USE_BOOST)
-#  include <boost/static_assert.hpp>
-#  define MAL_STATIC_ASSERT BOOST_STATIC_ASSERT
-#else
-#  define MAL_STATIC_ASSERT(x) //nothing
-#endif
+// Use C++11 static_assert
+#define MAL_STATIC_ASSERT(x) static_assert( (x), "x" )
 
 // Some useful macros
 #ifdef PROFILE_FINAL

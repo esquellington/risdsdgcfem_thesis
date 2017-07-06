@@ -58,12 +58,8 @@ static const Real gs_EpsilonVertexLambda( 0.05f ); //[0..0.5], lambda fraction a
 #endif
 
 // Some defines...
-#if defined(USE_BOOST)
-#  include <boost/static_assert.hpp>
-#  define GEO_STATIC_ASSERT BOOST_STATIC_ASSERT
-#else
-#  define GEO_STATIC_ASSERT(x) //nothing
-#endif
+// Use C++11 static_assert
+#define GEO_STATIC_ASSERT(x) static_assert( (x), "x" )
 
 // Some useful macros
 #ifdef PROFILE_FINAL
