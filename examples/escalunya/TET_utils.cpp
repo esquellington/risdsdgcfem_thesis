@@ -568,8 +568,8 @@ bool Fit_TetSolidShape3_To_TriSurfaceShape3( const geo::TriSurfaceShape3& surfac
                                                     vec_pos0[vec_vtri[it_v][it_vtri].second] };
                             // Test if non-degenerate tet (swept triangle), test it, otherwise test only final pos triangle.
                             if( mal::Abs(mal::Det(mal::GMat3x3_From_Columns( vec_tet_pos[1]-vec_tet_pos[0],
-                                                                             vec_tet_pos[1]-vec_tet_pos[1],
-                                                                             vec_tet_pos[1]-vec_tet_pos[2] ))) > 1e-6 )
+                                                                             vec_tet_pos[2]-vec_tet_pos[0],
+                                                                             vec_tet_pos[3]-vec_tet_pos[0] ))) > 1e-6 )
                                 bPiercing = geo::np::Overlap_Triangle3_Tetrahedron3( vec_tri_pos[0], vec_tri_pos[1], vec_tri_pos[2],
                                                                                      vec_tet_pos[0], vec_tet_pos[1], vec_tet_pos[2], vec_tet_pos[3] );
                             else
